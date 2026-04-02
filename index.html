@@ -23,15 +23,15 @@
   --glow: 0 0 40px rgba(255,107,53,0.55), 0 0 80px rgba(255,107,53,0.2);
 }
 
-html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-family:'Space Mono',monospace;overflow:hidden;}
+html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-family:'Space Mono',monospace;}
 
 /* ===== SPLASH ===== */
 #splash{
   position:fixed;inset:0;background:var(--dark);z-index:9999;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
-  transition:opacity 1s ease,visibility 1s ease;
+  transition:opacity 0.8s ease;
 }
-#splash.gone{opacity:0;visibility:hidden;pointer-events:none;}
+#splash.gone{opacity:0;pointer-events:none;}
 
 .sp-vinyl-outer{
   width:210px;height:210px;border-radius:50%;
@@ -91,13 +91,12 @@ html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-f
 .sp-bar{
   height:100%;width:0%;
   background:linear-gradient(90deg,var(--or3),var(--or2),var(--or4));
-  animation:barLoad 3.5s 0.4s ease forwards;
+  animation:barLoad 3.2s 0.4s ease forwards;
 }
 @keyframes barLoad{to{width:100%;}}
 @keyframes fadeUp{to{opacity:1;}}
 @keyframes splashSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 
-/* splash notes */
 .sp-note{
   position:absolute;font-size:2rem;opacity:0;color:var(--or1);
   animation:noteShoot 2s ease-out forwards;
@@ -128,6 +127,7 @@ html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-f
   transition:opacity 0.65s ease,visibility 0.65s ease;z-index:1;
 }
 .page.active{opacity:1;visibility:visible;pointer-events:all;}
+#pg-songs.active,#pg-detail.active{overflow-y:auto;}
 
 /* ===== LANDING ===== */
 #pg-landing{
@@ -198,7 +198,7 @@ html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-f
 @keyframes landFloat{0%,100%{transform:translateY(0) rotate(-8deg);}50%{transform:translateY(-35px) rotate(8deg);}}
 
 /* ===== SONGS PAGE ===== */
-#pg-songs{overflow-y:auto;background:var(--dark);}
+#pg-songs{background:var(--dark);}
 .songs-nav{
   display:flex;align-items:center;justify-content:space-between;
   padding:26px 60px;
@@ -217,14 +217,8 @@ html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-f
 .back-btn:hover{color:var(--or1);border-color:var(--or1);background:rgba(255,107,53,0.05);}
 
 .songs-hero{text-align:center;padding:55px 20px 35px;}
-.songs-hero-title{
-  font-family:'Bebas Neue',sans-serif;font-size:2.8rem;
-  color:var(--text);letter-spacing:0.25em;
-}
-.songs-hero-sub{
-  font-family:'Cormorant Garamond',serif;font-style:italic;
-  color:var(--dim);font-size:0.95rem;margin-top:7px;letter-spacing:0.12em;
-}
+.songs-hero-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--text);letter-spacing:0.25em;}
+.songs-hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--dim);font-size:0.95rem;margin-top:7px;letter-spacing:0.12em;}
 
 .songs-grid{
   display:grid;
@@ -315,7 +309,7 @@ html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-f
 .song-card:hover .prev-tag{opacity:1;}
 
 /* ===== DETAIL PAGE ===== */
-#pg-detail{overflow-y:auto;background:var(--dark);}
+#pg-detail{background:var(--dark);}
 .detail-nav{
   display:flex;align-items:center;justify-content:space-between;
   padding:26px 60px;
@@ -402,36 +396,97 @@ html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-f
   filter:blur(8px);
 }
 
-/* info panel */
-.info-panel{max-width:430px;flex-shrink:0;}
-.info-tracknum{font-size:0.7rem;color:var(--or1);letter-spacing:0.4em;text-transform:uppercase;display:block;margin-bottom:10px;}
-.info-title{
-  font-family:'Bebas Neue',sans-serif;font-size:4.2rem;
-  color:var(--text);line-height:0.95;margin-bottom:10px;
-}
-.info-artist{
-  font-family:'Cormorant Garamond',serif;font-style:italic;
-  color:var(--dim);font-size:1.1rem;margin-bottom:40px;letter-spacing:0.05em;
+/* ===== CUSTOM PLAYER ===== */
+.custom-player{
+  width:100%;border-radius:6px;
+  border:1px solid rgba(255,107,53,0.22);
+  background:var(--dark2);
+  margin-bottom:28px;
+  overflow:hidden;
+  position:relative;
 }
 
+/* Hidden GDrive iframe sits behind — used for actual playback */
+.gdrive-frame{
+  width:100%;height:0;border:none;display:block;overflow:hidden;
+  position:absolute;bottom:0;left:0;opacity:0;pointer-events:none;
+}
+.gdrive-frame.reveal{
+  height:80px;opacity:1;pointer-events:all;position:relative;
+}
+
+/* Our beautiful control bar */
+.player-ui{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 20px;
+}
+
+.play-pause-btn{
+  width:44px;height:44px;border-radius:50%;
+  border:none;cursor:pointer;
+  background:var(--or1);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:transform 0.2s ease,box-shadow 0.2s ease,background 0.2s ease;
+  box-shadow:0 0 20px rgba(255,107,53,0.4);
+}
+.play-pause-btn:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 35px rgba(255,107,53,0.7);
+  background:var(--or2);
+}
+.play-pause-btn svg{width:16px;height:16px;fill:var(--dark);}
+
+.player-track-info{flex:1;min-width:0;}
+.player-song-name{
+  font-family:'Bebas Neue',sans-serif;font-size:1rem;
+  color:var(--text);letter-spacing:0.05em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.player-status{
+  font-size:0.6rem;color:var(--dim);letter-spacing:0.2em;
+  margin-top:3px;text-transform:uppercase;
+}
+
+/* animated bars when playing */
+.playing-bars{
+  display:flex;gap:3px;align-items:flex-end;height:20px;
+  opacity:0;transition:opacity 0.3s ease;
+  flex-shrink:0;
+}
+.playing-bars.active{opacity:1;}
+.pbar{
+  width:3px;background:var(--or1);border-radius:2px;
+  animation:pbarAnim 0.5s ease-in-out infinite alternate;
+}
+.pbar:nth-child(1){animation-delay:0s;animation-duration:0.4s;}
+.pbar:nth-child(2){animation-delay:0.1s;animation-duration:0.55s;}
+.pbar:nth-child(3){animation-delay:0.2s;animation-duration:0.45s;}
+.pbar:nth-child(4){animation-delay:0.05s;animation-duration:0.6s;}
+.pbar:nth-child(5){animation-delay:0.15s;animation-duration:0.38s;}
+@keyframes pbarAnim{from{height:3px;opacity:0.4;}to{height:20px;opacity:1;}}
+
+/* The "open full player" toggle */
+.show-gdrive-btn{
+  font-family:'Space Mono',monospace;font-size:0.6rem;
+  letter-spacing:0.15em;color:var(--dim);text-transform:uppercase;
+  background:none;border:none;cursor:pointer;
+  padding:0 20px 14px;display:block;width:100%;text-align:right;
+  transition:color 0.2s ease;
+}
+.show-gdrive-btn:hover{color:var(--or1);}
+
+/* ===== WAVEFORM ===== */
 .waveform{display:flex;gap:3px;align-items:center;height:32px;margin-bottom:32px;}
 .wbar{width:3px;background:var(--or1);border-radius:2px;opacity:0.35;transition:opacity 0.3s;}
 .wbar.lit{opacity:1;animation:wAnim 0.7s ease-in-out infinite alternate;}
 @keyframes wAnim{from{height:3px;}to{height:32px;}}
 
-.player-shell{
-  width:100%;border-radius:6px;overflow:hidden;
-  border:1px solid rgba(255,107,53,0.2);
-  background:var(--dark2);margin-bottom:28px;
-  position:relative;
-}
-.player-shell::before{
-  content:'FULL TRACK';
-  position:absolute;top:-9px;left:18px;
-  font-size:0.58rem;color:var(--or1);letter-spacing:0.35em;
-  background:var(--dark);padding:0 10px;z-index:1;
-}
-.player-shell iframe{width:100%;height:80px;border:none;display:block;}
+/* info panel */
+.info-panel{max-width:430px;flex-shrink:0;}
+.info-tracknum{font-size:0.7rem;color:var(--or1);letter-spacing:0.4em;text-transform:uppercase;display:block;margin-bottom:10px;}
+.info-title{font-family:'Bebas Neue',sans-serif;font-size:4.2rem;color:var(--text);line-height:0.95;margin-bottom:10px;}
+.info-artist{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--dim);font-size:1.1rem;margin-bottom:40px;letter-spacing:0.05em;}
 
 .tags{display:flex;gap:8px;flex-wrap:wrap;}
 .tag{
@@ -512,7 +567,7 @@ html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-f
   </div>
   <div class="songs-hero">
     <div class="songs-hero-title">The Collection</div>
-    <div class="songs-hero-sub">Hover to spin &amp; preview · Click to play full track</div>
+    <div class="songs-hero-sub">Hover to spin &amp; preview · Click to open track</div>
   </div>
   <div class="songs-grid" id="songs-grid"></div>
 </section>
@@ -540,9 +595,39 @@ html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-f
       <h2 class="info-title" id="d-title">Song Title</h2>
       <p class="info-artist">Lyrics by Gab &nbsp;·&nbsp; AI Vocals</p>
       <div class="waveform" id="waveform"></div>
-      <div class="player-shell">
-        <iframe id="d-iframe" allow="autoplay" allowfullscreen></iframe>
+
+      <!-- CUSTOM PLAYER -->
+      <div class="custom-player" id="custom-player">
+        <div class="player-ui">
+          <button class="play-pause-btn" id="play-pause-btn" onclick="togglePlay()">
+            <!-- Play icon -->
+            <svg id="icon-play" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+            <!-- Pause icon (hidden) -->
+            <svg id="icon-pause" viewBox="0 0 24 24" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+          <div class="player-track-info">
+            <div class="player-song-name" id="player-song-name">—</div>
+            <div class="player-status" id="player-status">Click play to listen</div>
+          </div>
+          <div class="playing-bars" id="playing-bars">
+            <div class="pbar" style="height:6px"></div>
+            <div class="pbar" style="height:14px"></div>
+            <div class="pbar" style="height:9px"></div>
+            <div class="pbar" style="height:17px"></div>
+            <div class="pbar" style="height:11px"></div>
+          </div>
+        </div>
+        <!-- Hidden GDrive iframe — we trigger it with autoplay via src param -->
+        <iframe
+          id="d-iframe"
+          class="gdrive-frame"
+          allow="autoplay"
+          allowfullscreen
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        ></iframe>
+        <button class="show-gdrive-btn" onclick="toggleGDrivePlayer()">⊞ show full player</button>
       </div>
+
       <div class="tags">
         <span class="tag">GAB.AI</span>
         <span class="tag">Original</span>
@@ -554,22 +639,21 @@ html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-f
 </section>
 
 <script>
-// ── Song data (update titles to your real song names!) ──────────────────────
 const SONGS = [
-  { id:'1gt2eD7MWlrTbQLiWzKnVWgVC-h8-le8O', title:'A Leader Doesn't Let Their People Drown',  num:'01' },
+  { id:'1gt2eD7MWlrTbQLiWzKnVWgVC-h8-le8O', title:'A Leader Doesn\'t Let Their People Drown', num:'01' },
   { id:'1Hrw6NHYRGBxSUXFWT_p6V7l1OuYXTX95', title:'LAST SPARK',       num:'02' },
-  { id:'1ecnW4wldr-jG7cdJ-eGmg1poegbXojEu', title:'MATA',     num:'03' },
-  { id:'1esBd2uV_HPGprYIA-j_1NT2verL3LwN7', title:'Pwede Paulit',   num:'04' },
-  { id:'1L7VddKb_z1V6vVRoz7sRo1xc-WykHh3N', title:'Salamat Kaibigan',   num:'05' },
-  { id:'11ya1IYiCqZWFdG71ahHqIvaU3PEM_SvC', title:'Suntok',      num:'06' },
-  { id:'1VQuzbpqZQASR0nTQas16s_6dQM96JA06', title:'어디로, 어디로 간 거니',       num:'07' },
-  { id:'1reey0nSLN6WJ60oB-0I2_jdFnOmBIhek', title:'왜 날 바라봐_ 난 그냥 regular',     num:'08' },
+  { id:'1ecnW4wldr-jG7cdJ-eGmg1poegbXojEu', title:'MATA',              num:'03' },
+  { id:'1esBd2uV_HPGprYIA-j_1NT2verL3LwN7', title:'Pwede Paulit',     num:'04' },
+  { id:'1L7VddKb_z1V6vVRoz7sRo1xc-WykHh3N', title:'Salamat Kaibigan', num:'05' },
+  { id:'11ya1IYiCqZWFdG71ahHqIvaU3PEM_SvC', title:'Suntok',           num:'06' },
+  { id:'1VQuzbpqZQASR0nTQas16s_6dQM96JA06', title:'어디로, 어디로 간 거니', num:'07' },
+  { id:'1reey0nSLN6WJ60oB-0I2_jdFnOmBIhek', title:'왜 날 바라봐_ 난 그냥 regular', num:'08' },
 ];
 
-// ── Splash ───────────────────────────────────────────────────────────────────
-const splashNoteEmojis = ['♪','♫','♩','♬','🎵','🎶'];
+// ── SPLASH FIX ───────────────────────────────────────────────────────────────
+// Dismiss after bar finishes (~3.6s from page load)
 const splashEl = document.getElementById('splash');
-// Shoot notes during splash
+const splashNoteEmojis = ['♪','♫','♩','♬','🎵','🎶'];
 for(let i=0;i<8;i++){
   setTimeout(()=>{
     const n=document.createElement('span');
@@ -582,10 +666,14 @@ for(let i=0;i<8;i++){
     setTimeout(()=>n.remove(),2200);
   },800+i*300);
 }
-setTimeout(()=>splashEl.classList.add('gone'),4400);
+// Add gone class after bar animation completes, then remove from DOM
+setTimeout(()=>{
+  splashEl.classList.add('gone');
+  setTimeout(()=>{ splashEl.style.display='none'; },900);
+}, 3800);
 
-// ── Emoji background ─────────────────────────────────────────────────────────
-const emojis=['🎵','🎶','🎸','🎹','🎤','🎧','🎼','🥁','🎷','🎺','🎻','🪗','🎙️','♪','♫','♩','♬','🎼'];
+// ── EMOJI BG ─────────────────────────────────────────────────────────────────
+const emojis=['🎵','🎶','🎸','🎹','🎤','🎧','🎼','🥁','🎷','🎺','🎻','🪗','🎙️','♪','♫','♩','♬'];
 const ebg=document.getElementById('emojibg');
 for(let i=0;i<28;i++){
   const e=document.createElement('span');
@@ -609,7 +697,7 @@ for(let i=0;i<8;i++){
   eqRow.appendChild(b);
 }
 
-// ── Waveform decoration ───────────────────────────────────────────────────────
+// ── Waveform ─────────────────────────────────────────────────────────────────
 const wf=document.getElementById('waveform');
 for(let i=0;i<44;i++){
   const b=document.createElement('div');
@@ -625,7 +713,6 @@ for(let i=0;i<44;i++){
 
 // ── Build songs grid ──────────────────────────────────────────────────────────
 const grid=document.getElementById('songs-grid');
-let previewAudio=null, previewTimer=null;
 
 SONGS.forEach((song,i)=>{
   const card=document.createElement('div');
@@ -644,38 +731,73 @@ SONGS.forEach((song,i)=>{
     <div class="song-meta">
       <span class="song-tracknum">Track ${song.num}</span>
       <div class="song-name">${song.title}</div>
-      <span class="prev-tag">● PREVIEW</span>
+      <span class="prev-tag">● HOVER TO PREVIEW</span>
     </div>`;
 
   const disc=card.querySelector('.disc');
 
   card.addEventListener('mouseenter',()=>{
     disc.classList.add('disc-spin');
-    stopPreview();
-    // Try audio preview — Google Drive direct stream (may be blocked by CORS; fails silently)
-    try{
-      const a=new Audio(`https://drive.google.com/uc?export=download&id=${song.id}`);
-      a.volume=0.55;
-      a.play().catch(()=>{});
-      previewAudio=a;
-      previewTimer=setTimeout(()=>stopPreview(),60000);
-    }catch(e){}
   });
-
   card.addEventListener('mouseleave',()=>{
     disc.classList.remove('disc-spin');
-    stopPreview();
   });
-
-  card.addEventListener('click',()=>{ stopPreview(); openDetail(song,i); });
+  card.addEventListener('click',()=>{ openDetail(song); });
 
   grid.appendChild(card);
   setTimeout(()=>card.classList.add('vis'),i*90);
 });
 
-function stopPreview(){
-  if(previewAudio){previewAudio.pause();previewAudio=null;}
-  if(previewTimer){clearTimeout(previewTimer);previewTimer=null;}
+// ── Player State ──────────────────────────────────────────────────────────────
+let isPlaying = false;
+let currentSong = null;
+let gdriveVisible = false;
+
+function togglePlay(){
+  const iframe = document.getElementById('d-iframe');
+  const playIcon = document.getElementById('icon-play');
+  const pauseIcon = document.getElementById('icon-pause');
+  const bars = document.getElementById('playing-bars');
+  const status = document.getElementById('player-status');
+  const bigDisc = document.getElementById('big-disc');
+  const tonearm = document.getElementById('tonearm');
+
+  if(!currentSong) return;
+
+  if(!isPlaying){
+    // Load and start GDrive embed with autoplay
+    iframe.src = `https://drive.google.com/file/d/${currentSong.id}/preview`;
+    isPlaying = true;
+    playIcon.style.display='none';
+    pauseIcon.style.display='block';
+    bars.classList.add('active');
+    status.textContent = 'Now playing…';
+    bigDisc.classList.add('playing');
+    tonearm.style.transform='rotate(-18deg)';
+  } else {
+    // Pause by clearing the iframe src
+    iframe.src = '';
+    isPlaying = false;
+    playIcon.style.display='block';
+    pauseIcon.style.display='none';
+    bars.classList.remove('active');
+    status.textContent = 'Paused — click to resume';
+    bigDisc.classList.remove('playing');
+    tonearm.style.transform='rotate(-35deg)';
+  }
+}
+
+function toggleGDrivePlayer(){
+  const iframe = document.getElementById('d-iframe');
+  const btn = document.querySelector('.show-gdrive-btn');
+  gdriveVisible = !gdriveVisible;
+  if(gdriveVisible){
+    iframe.classList.add('reveal');
+    btn.textContent = '⊟ hide full player';
+  } else {
+    iframe.classList.remove('reveal');
+    btn.textContent = '⊞ show full player';
+  }
 }
 
 // ── Page navigation ───────────────────────────────────────────────────────────
@@ -686,29 +808,46 @@ function showPage(id){
 
 function goToSongs(){
   showPage('pg-songs');
-  // Re-stagger cards
   document.querySelectorAll('.song-card').forEach((c,i)=>{
     c.classList.remove('vis');
     setTimeout(()=>c.classList.add('vis'),i*90);
   });
 }
 
-function openDetail(song,idx){
-  document.getElementById('d-tracknum').textContent=`Track ${song.num}`;
-  document.getElementById('d-title').textContent=song.title;
-  document.getElementById('d-iframe').src=`https://drive.google.com/file/d/${song.id}/preview`;
-  const bd=document.getElementById('big-disc');
-  bd.classList.add('playing');
-  // Tonearm swings in when playing
-  document.getElementById('tonearm').style.transform='rotate(-18deg)';
+function openDetail(song){
+  currentSong = song;
+  isPlaying = false;
+
+  document.getElementById('d-tracknum').textContent = `Track ${song.num}`;
+  document.getElementById('d-title').textContent = song.title;
+  document.getElementById('player-song-name').textContent = song.title;
+  document.getElementById('player-status').textContent = 'Click play to listen';
+
+  // Reset player UI
+  document.getElementById('icon-play').style.display='block';
+  document.getElementById('icon-pause').style.display='none';
+  document.getElementById('playing-bars').classList.remove('active');
+  document.getElementById('d-iframe').src = '';
+  document.getElementById('d-iframe').classList.remove('reveal');
+  document.querySelector('.show-gdrive-btn').textContent = '⊞ show full player';
+  gdriveVisible = false;
+
+  const bigDisc = document.getElementById('big-disc');
+  bigDisc.classList.remove('playing');
+  document.getElementById('tonearm').style.transform='rotate(-35deg)';
+
   showPage('pg-detail');
 }
 
 function closeDetail(){
-  const bd=document.getElementById('big-disc');
-  bd.classList.remove('playing');
+  // Stop playback
+  if(isPlaying){
+    document.getElementById('d-iframe').src='';
+    isPlaying=false;
+  }
+  const bigDisc=document.getElementById('big-disc');
+  bigDisc.classList.remove('playing');
   document.getElementById('tonearm').style.transform='rotate(-35deg)';
-  document.getElementById('d-iframe').src='';
   showPage('pg-songs');
 }
 
@@ -727,7 +866,6 @@ document.addEventListener('mousemove',e=>{
     setTimeout(()=>sp.remove(),620);
   }
 });
-// inject sparkFade keyframes
 const ks=document.createElement('style');
 ks.textContent='@keyframes sparkFade{0%{transform:scale(1);opacity:0.8;}100%{transform:scale(0) translateY(-10px);opacity:0;}}';
 document.head.appendChild(ks);
